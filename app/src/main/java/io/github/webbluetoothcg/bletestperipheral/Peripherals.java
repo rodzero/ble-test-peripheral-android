@@ -16,38 +16,91 @@
 
 package io.github.webbluetoothcg.bletestperipheral;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethod;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 public class Peripherals extends ListActivity {
 
-  // TODO(g-ortuno): Implement heart rate monitor peripheral
-  private static final String[] PERIPHERALS_NAMES = new String[]{"Battery", "Heart Rate Monitor"};
-  public final static String EXTRA_PERIPHERAL_INDEX = "PERIPHERAL_INDEX";
+    // TODO(g-ortuno): Implement heart rate monitor peripheral
+    private static final String[] PERIPHERALS_NAMES = new String[]{"Battery", "Heart Rate Monitor", "Temperature"};
+    public final static String EXTRA_PERIPHERAL_INDEX = "PERIPHERAL_INDEX";
+    public static final String ADVERTISE_MAC_ADDRESS_PREF = "AdvertiseMacAddress";
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_peripherals_list);
-    ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+    public static final String DEFAULT_MACADDRESS = "11:22:33:44:55:66";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_peripherals_list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
         /* layout for the list item */ android.R.layout.simple_list_item_1,
         /* id of the TextView to use */ android.R.id.text1,
         /* values for the list */ PERIPHERALS_NAMES);
-    setListAdapter(adapter);
-  }
+        setListAdapter(adapter);
+    }
 
-  @Override
-  protected void onListItemClick(ListView l, View v, int position, long id) {
-    super.onListItemClick(l, v, position, id);
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
 
-    Intent intent = new Intent(this, Peripheral.class);
-    intent.putExtra(EXTRA_PERIPHERAL_INDEX, position);
-    startActivity(intent);
-  }
+        Intent intent = new Intent(this, Peripheral.class);
+        intent.putExtra(EXTRA_PERIPHERAL_INDEX, position);
+        startActivity(intent);
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Settings");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("Mac Address");
+        alertBuilder.setMessage("Inform a Mac Address that will be sent on Advertisement Date");
+
+        final EditText edMacAddress = new EditText(this);
+
+        alertBuilder.setView(edMacAddress);
+
+        alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String newMacAddress = edMacAddress.getText().toString();
+
+                if(newMacAddress != null && !newMacAddress.isEmpty()) {
+                    if(newMacAddress.matches("^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$")) {
+                        SharedPreferences.Editor editor = getSharedPreferences(ADVERTISE_MAC_ADDRESS_PREF, MODE_PRIVATE).edit();
+                        editor.putString(ADVERTISE_MAC_ADDRESS_PREF, newMacAddress);
+                        editor.commit();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Mac address format should be 11:22:33:44:55:66", Toast.LENGTH_LONG).show();
+                    }
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Mac Address string should not be empty" , Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        alertBuilder.create().show();
+
+        return super.onOptionsItemSelected(item);
+    }
 }

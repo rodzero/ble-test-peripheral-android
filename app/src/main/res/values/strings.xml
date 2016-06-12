@@ -55,4 +55,8 @@
         discoverable.
     </string>
     <string name="menu_disconnect_devices">Disconnect Devices</string>
+
+    <!-- Temperature Service -->
+    <string name="temperatureServiceName">Temperature Service</string>
+    <string name="maxTemperatureValue">50</string>
 </resources>
