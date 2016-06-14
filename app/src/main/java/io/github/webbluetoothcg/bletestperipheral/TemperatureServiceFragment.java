@@ -19,24 +19,17 @@ package io.github.webbluetoothcg.bletestperipheral;
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.ParcelUuid;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.util.Arrays;
 import java.util.UUID;
 
 public class TemperatureServiceFragment extends ServiceFragment {
@@ -56,9 +49,9 @@ public class TemperatureServiceFragment extends ServiceFragment {
      * See <a href="https://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml">
      * Heart Rate Measurement</a>
      */
-    private static final UUID HEART_RATE_MEASUREMENT_UUID = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb");
+    private static final UUID TEMPERATURE_MEASUREMENT_UUID = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb");
     private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCharacteristic.FORMAT_UINT8;
-    private static final int INITIAL_HEART_RATE_MEASUREMENT_VALUE = 37;
+    private static final int INITIAL_TEMPERATURE_MEASUREMENT_VALUE = 37;
 
 
     private BluetoothGattService mTemperatureService;
@@ -76,6 +69,17 @@ public class TemperatureServiceFragment extends ServiceFragment {
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             currentTemperature = i;
             txtTemperatureValue.setText(String.valueOf(currentTemperature));
+
+			if(currentTemperature > 37) {
+				seekBar.getThumb().setTint(Color.RED);
+				seekBar.getProgressDrawable().setTint(Color.RED);
+			} else if(currentTemperature > 23) {
+				seekBar.getThumb().setTint(Color.BLUE);
+				seekBar.getProgressDrawable().setTint(Color.BLUE);
+			} else {
+				seekBar.getThumb().setTint(Color.CYAN);
+				seekBar.getProgressDrawable().setTint(Color.CYAN);
+			}
         }
 
         @Override
@@ -97,7 +101,8 @@ public class TemperatureServiceFragment extends ServiceFragment {
     };
 
     public TemperatureServiceFragment() {
-        mTemperatureMeasurementCharacteristic = new BluetoothGattCharacteristic(HEART_RATE_MEASUREMENT_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+        mTemperatureMeasurementCharacteristic = new BluetoothGattCharacteristic(TEMPERATURE_MEASUREMENT_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+        mTemperatureMeasurementCharacteristic.setValue(INITIAL_TEMPERATURE_MEASUREMENT_VALUE, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
 
         mTemperatureMeasurementCharacteristic.addDescriptor(Peripheral.getClientCharacteristicConfigurationDescriptor());
 
@@ -116,7 +121,7 @@ public class TemperatureServiceFragment extends ServiceFragment {
 
         txtTemperatureValue = (TextView) view.findViewById(R.id.txtTemperatureValue);
 
-        temperatureBar.setProgress(INITIAL_HEART_RATE_MEASUREMENT_VALUE);
+        temperatureBar.setProgress(INITIAL_TEMPERATURE_MEASUREMENT_VALUE);
 
         Button notifyButton = (Button) view.findViewById(R.id.button_heartRateMeasurementNotify);
         notifyButton.setOnClickListener(mNotifyButtonListener);

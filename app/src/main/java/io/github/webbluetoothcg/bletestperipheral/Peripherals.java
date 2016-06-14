@@ -36,7 +36,7 @@ import android.widget.Toast;
 public class Peripherals extends ListActivity {
 
     // TODO(g-ortuno): Implement heart rate monitor peripheral
-    private static final String[] PERIPHERALS_NAMES = new String[]{"Battery", "Heart Rate Monitor", "Temperature"};
+    private static final String[] PERIPHERALS_NAMES = new String[]{"Temperature"};
     public final static String EXTRA_PERIPHERAL_INDEX = "PERIPHERAL_INDEX";
     public static final String ADVERTISE_MAC_ADDRESS_PREF = "AdvertiseMacAddress";
 
@@ -64,38 +64,39 @@ public class Peripherals extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add("Settings");
+        menu.add("Change MAC Address");
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+		final String[] macAddressItems = new String[] {
+				"11:11:11:11:11:11",
+				"22:22:22:22:22:22",
+				"33:33:33:33:33:33",
+				"44:44:44:44:44:44",
+				"55:55:55:55:55:55",
+				"66:66:66:66:66:66",
+				"77:77:77:77:77:77",
+				"88:88:88:88:88:88",
+				"99:99:99:99:99:99",
+				"00:00:00:00:00:00"
+		};
+
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle("Mac Address");
-        alertBuilder.setMessage("Inform a Mac Address that will be sent on Advertisement Date");
+        alertBuilder.setTitle("Choose MAC Address");
+//        alertBuilder.setMessage("Inform a Mac Address that will be sent on Advertisement Date");
 
-        final EditText edMacAddress = new EditText(this);
-
-        alertBuilder.setView(edMacAddress);
-
-        alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        alertBuilder.setItems(macAddressItems,
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                String newMacAddress = edMacAddress.getText().toString();
+				String newMacAddress = macAddressItems[i];
 
-                if(newMacAddress != null && !newMacAddress.isEmpty()) {
-                    if(newMacAddress.matches("^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$")) {
-                        SharedPreferences.Editor editor = getSharedPreferences(ADVERTISE_MAC_ADDRESS_PREF, MODE_PRIVATE).edit();
-                        editor.putString(ADVERTISE_MAC_ADDRESS_PREF, newMacAddress);
-                        editor.commit();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(), "Mac address format should be 11:22:33:44:55:66", Toast.LENGTH_LONG).show();
-                    }
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "Mac Address string should not be empty" , Toast.LENGTH_LONG).show();
-                }
+				SharedPreferences.Editor editor = getSharedPreferences(ADVERTISE_MAC_ADDRESS_PREF, MODE_PRIVATE).edit();
+				editor.putString(ADVERTISE_MAC_ADDRESS_PREF, newMacAddress);
+				editor.commit();
             }
         });
 

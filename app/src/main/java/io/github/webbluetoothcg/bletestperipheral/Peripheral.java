@@ -234,13 +234,6 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_peripheral, menu);
-        return true /* show menu */;
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT) {
@@ -284,15 +277,6 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_disconnect_devices) {
-            disconnectFromDevices();
-            return true /* event_consumed */;
-        }
-        return false /* event_consumed */;
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         if (mGattServer != null) {
@@ -311,9 +295,9 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
         if (mBluetoothDevices.isEmpty()) {
             Toast.makeText(this, R.string.bluetoothDeviceNotConnected, Toast.LENGTH_SHORT).show();
         } else {
-            boolean indicate = (characteristic.getProperties()
-                    & BluetoothGattCharacteristic.PROPERTY_INDICATE)
-                    == BluetoothGattCharacteristic.PROPERTY_INDICATE;
+
+            boolean indicate = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE) == BluetoothGattCharacteristic.PROPERTY_INDICATE;
+
             for (BluetoothDevice device : mBluetoothDevices) {
                 // true for indication (acknowledge) and false for notification (unacknowledge).
                 mGattServer.notifyCharacteristicChanged(device, characteristic, indicate);
