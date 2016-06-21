@@ -50,8 +50,7 @@ public class TemperatureServiceFragment extends ServiceFragment {
      * Heart Rate Measurement</a>
      */
     private static final UUID TEMPERATURE_MEASUREMENT_UUID = UUID.fromString("0000FFF8-0000-1000-8000-00805f9b34fb");
-//    private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCharacteristic.FORMAT_UINT8;
-private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCharacteristic.FORMAT_FLOAT;
+    private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCharacteristic.FORMAT_UINT8;
     private static final int INITIAL_TEMPERATURE_MEASUREMENT_VALUE = 37;
 
 
@@ -90,8 +89,7 @@ private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCha
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-//            mTemperatureMeasurementCharacteristic.setValue(currentTemperature, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
-            mTemperatureMeasurementCharacteristic.setValue(currentTemperature , -1, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
+            mTemperatureMeasurementCharacteristic.setValue(currentTemperature, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
         }
     };
 
@@ -104,8 +102,7 @@ private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCha
 
     public TemperatureServiceFragment() {
         mTemperatureMeasurementCharacteristic = new BluetoothGattCharacteristic(TEMPERATURE_MEASUREMENT_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
-//        mTemperatureMeasurementCharacteristic.setValue(INITIAL_TEMPERATURE_MEASUREMENT_VALUE, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
-		mTemperatureMeasurementCharacteristic.setValue(INITIAL_TEMPERATURE_MEASUREMENT_VALUE * 10, -1, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
+        mTemperatureMeasurementCharacteristic.setValue(INITIAL_TEMPERATURE_MEASUREMENT_VALUE, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
 
         mTemperatureMeasurementCharacteristic.addDescriptor(Peripheral.getClientCharacteristicConfigurationDescriptor());
 

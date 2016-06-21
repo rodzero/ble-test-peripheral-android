@@ -35,14 +35,16 @@ import android.widget.Toast;
 
 public class Peripherals extends ListActivity {
 
-    // TODO(g-ortuno): Implement heart rate monitor peripheral
+	// TODO(g-ortuno): Implement heart rate monitor peripheral
     private static final String[] PERIPHERALS_NAMES = new String[]{"Temperature"};
     public final static String EXTRA_PERIPHERAL_INDEX = "PERIPHERAL_INDEX";
     public static final String ADVERTISE_MAC_ADDRESS_PREF = "AdvertiseMacAddress";
 
     public static final String DEFAULT_MACADDRESS = "11:22:33:44:55:66";
+	public static final String SELECT_MAC_ADDRESS_ON_LIST = "Select MAC Address on list";
+	public static final String INFORM_MAC_ADDRESS_MANUALLY = "Inform MAC Address manually";
 
-    @Override
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_peripherals_list);
@@ -64,13 +66,63 @@ public class Peripherals extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add("Change MAC Address");
+        menu.add(SELECT_MAC_ADDRESS_ON_LIST);
+		menu.add(INFORM_MAC_ADDRESS_MANUALLY);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+		AlertDialog alert = null;
+
+		if(item.getTitle().equals(SELECT_MAC_ADDRESS_ON_LIST)) {
+			alert = createMacAddressListDialog();
+
+		} else if (item.getTitle().equals(INFORM_MAC_ADDRESS_MANUALLY)) {
+			alert = createMacAddressTextInputDialog();
+		}
+
+		alert.show();
+
+        return super.onOptionsItemSelected(item);
+    }
+
+	private AlertDialog createMacAddressTextInputDialog() {
+		AlertDialog alert;
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+		alertBuilder.setTitle("Mac Address");
+		alertBuilder.setMessage("Inform a Mac Address that will be sent on Advertisement Date");
+
+		final EditText edMacAddress = new EditText(this);
+		alertBuilder.setView(edMacAddress);
+
+		alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i) {
+				String newMacAddress = edMacAddress.getText().toString();
+
+				if(newMacAddress != null && !newMacAddress.isEmpty()) {
+					if(newMacAddress.matches("^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$")) {
+						SharedPreferences.Editor editor = getSharedPreferences(ADVERTISE_MAC_ADDRESS_PREF, MODE_PRIVATE).edit();
+						editor.putString(ADVERTISE_MAC_ADDRESS_PREF, newMacAddress);
+						editor.commit();
+					}
+					else {
+						Toast.makeText(getApplicationContext(), "Mac address format should be 11:22:33:44:55:66", Toast.LENGTH_LONG).show();
+					}
+				}
+				else {
+					Toast.makeText(getApplicationContext(), "Mac Address string should not be empty" , Toast.LENGTH_LONG).show();
+				}
+			}
+		});
+
+		alert = alertBuilder.create();
+		return alert;
+	}
+
+	private AlertDialog createMacAddressListDialog() {
 		final String[] macAddressItems = new String[] {
 				"11:11:11:11:11:11",
 				"22:22:22:22:22:22",
@@ -85,24 +137,21 @@ public class Peripherals extends ListActivity {
 				"30:0e:db:48:b4:b0"
 		};
 
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle("Choose MAC Address");
-//        alertBuilder.setMessage("Inform a Mac Address that will be sent on Advertisement Date");
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+		alertBuilder.setTitle("Choose MAC Address");
 
-        alertBuilder.setItems(macAddressItems,
-                new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-				String newMacAddress = macAddressItems[i];
+		alertBuilder.setItems(macAddressItems,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						String newMacAddress = macAddressItems[i];
 
-				SharedPreferences.Editor editor = getSharedPreferences(ADVERTISE_MAC_ADDRESS_PREF, MODE_PRIVATE).edit();
-				editor.putString(ADVERTISE_MAC_ADDRESS_PREF, newMacAddress);
-				editor.commit();
-            }
-        });
+						SharedPreferences.Editor editor = getSharedPreferences(ADVERTISE_MAC_ADDRESS_PREF, MODE_PRIVATE).edit();
+						editor.putString(ADVERTISE_MAC_ADDRESS_PREF, newMacAddress);
+						editor.commit();
+					}
+				});
 
-        alertBuilder.create().show();
-
-        return super.onOptionsItemSelected(item);
-    }
+		return alertBuilder.create();
+	}
 }
