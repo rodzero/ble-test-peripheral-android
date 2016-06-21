@@ -43,14 +43,15 @@ public class TemperatureServiceFragment extends ServiceFragment {
      * See <a href="https://developer.bluetooth.org/gatt/services/Pages/ServiceViewer.aspx?u=org.bluetooth.service.heart_rate.xml">
      * Heart Rate Service</a>
      */
-    private static final UUID TEMPERATURE_SERVICE_UUID = UUID.fromString("0000180D-0000-1000-8000-00805f9b34fb");
+    private static final UUID TEMPERATURE_SERVICE_UUID = UUID.fromString("0000FFF0-0000-1000-8000-00805f9b34fb");
 
     /**
      * See <a href="https://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml">
      * Heart Rate Measurement</a>
      */
-    private static final UUID TEMPERATURE_MEASUREMENT_UUID = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb");
-    private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCharacteristic.FORMAT_UINT8;
+    private static final UUID TEMPERATURE_MEASUREMENT_UUID = UUID.fromString("0000FFF8-0000-1000-8000-00805f9b34fb");
+//    private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCharacteristic.FORMAT_UINT8;
+private static final int TEMPERATURE_MEASUREMENT_VALUE_FORMAT = BluetoothGattCharacteristic.FORMAT_FLOAT;
     private static final int INITIAL_TEMPERATURE_MEASUREMENT_VALUE = 37;
 
 
@@ -89,7 +90,8 @@ public class TemperatureServiceFragment extends ServiceFragment {
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            mTemperatureMeasurementCharacteristic.setValue(currentTemperature, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
+//            mTemperatureMeasurementCharacteristic.setValue(currentTemperature, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
+            mTemperatureMeasurementCharacteristic.setValue(currentTemperature , -1, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
         }
     };
 
@@ -102,7 +104,8 @@ public class TemperatureServiceFragment extends ServiceFragment {
 
     public TemperatureServiceFragment() {
         mTemperatureMeasurementCharacteristic = new BluetoothGattCharacteristic(TEMPERATURE_MEASUREMENT_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
-        mTemperatureMeasurementCharacteristic.setValue(INITIAL_TEMPERATURE_MEASUREMENT_VALUE, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
+//        mTemperatureMeasurementCharacteristic.setValue(INITIAL_TEMPERATURE_MEASUREMENT_VALUE, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
+		mTemperatureMeasurementCharacteristic.setValue(INITIAL_TEMPERATURE_MEASUREMENT_VALUE * 10, -1, TEMPERATURE_MEASUREMENT_VALUE_FORMAT, 1);
 
         mTemperatureMeasurementCharacteristic.addDescriptor(Peripheral.getClientCharacteristicConfigurationDescriptor());
 

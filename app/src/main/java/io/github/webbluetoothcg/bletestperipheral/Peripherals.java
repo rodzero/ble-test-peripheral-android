@@ -81,7 +81,8 @@ public class Peripherals extends ListActivity {
 				"77:77:77:77:77:77",
 				"88:88:88:88:88:88",
 				"99:99:99:99:99:99",
-				"00:00:00:00:00:00"
+				"00:00:00:00:00:00",
+				"30:0e:db:48:b4:b0"
 		};
 
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
